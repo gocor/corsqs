@@ -30,4 +30,4 @@ type QueueConfig struct {
 	MaxNumberOfMessages int64
 }
 
-const defaultContextTimeoutDuration = time.Second * 5
+const defaultContextTimeoutDuration = time.Second * 30
