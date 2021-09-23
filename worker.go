@@ -3,11 +3,16 @@ package corsqs
 import (
 	"context"
 	"sync"
+	"time"
 
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/sqs"
+	"github.com/jpillora/backoff"
 	"gitlab.com/gocor/corlog"
 )
+
+const defBackoffMinMS = 250
+const defBackoffMaxMS = 10000 // 10 sec
 
 // WorkerConfig ...
 type WorkerConfig struct {
@@ -19,6 +24,10 @@ type WorkerConfig struct {
 	LogMessage bool
 	// MaxWorkers that will independently receive messages from a queue.
 	MaxWorkers int
+	// BackoffMinMS
+	BackoffMinMS int
+	// BackoffMaxMS
+	BackoffMaxMS int
 }
 
 type Worker interface {
@@ -29,17 +38,27 @@ type Worker interface {
 }
 
 type worker struct {
-	receiver QueueReceiver
-	config   WorkerConfig
-	handler  func(ctx context.Context, msg *sqs.Message) error
+	receiver    QueueReceiver
+	config      WorkerConfig
+	queueConfig QueueConfig
+	handler     func(ctx context.Context, msg *sqs.Message) error
 }
 
 // NewWorker ...
 func NewWorker(sess *session.Session, config WorkerConfig, queueConfig QueueConfig) Worker {
+	// set config defaults
+	if config.BackoffMinMS == 0 {
+		config.BackoffMinMS = defBackoffMinMS
+	}
+	if config.BackoffMaxMS == 0 {
+		config.BackoffMaxMS = defBackoffMaxMS
+	}
+
 	receiver := NewReceiver(sess, queueConfig)
 	return &worker{
-		receiver: receiver,
-		config:   config,
+		receiver:    receiver,
+		config:      config,
+		queueConfig: queueConfig,
 	}
 }
 
@@ -62,6 +81,8 @@ func (w *worker) run(ctx context.Context, wg *sync.WaitGroup, id int) {
 	l := corlog.New(ctx)
 	l.Infow("run started", "id", id, "name", w.config.Name)
 
+	backoffCfg := w.getBackoffConfig(ctx)
+
 	for {
 		select {
 		case <-ctx.Done():
@@ -71,16 +92,22 @@ func (w *worker) run(ctx context.Context, wg *sync.WaitGroup, id int) {
 		}
 
 		msgs, err := w.receiver.Receive(ctx)
+		// handle backoff if not long polling and err or no messages
+		if w.queueConfig.ReceiveMessageWaitTimeSeconds == 0 &&
+			(err != nil || len(msgs) == 0) {
+			time.Sleep(backoffCfg.Duration())
+		}
 		if err != nil {
 			// Critical error!
 			l.Errorw("Worker Error", "err", err.Error(), "id", id, "name", w.config.Name)
 			continue
 		}
-
 		if len(msgs) == 0 {
 			continue
 		}
 
+		// reset backoff
+		backoffCfg.Reset()
 		if w.config.IsAsync {
 			w.async(ctx, msgs)
 		} else {
@@ -108,6 +135,15 @@ func (w *worker) async(ctx context.Context, msgs []*sqs.Message) {
 	}
 
 	wg.Wait()
+}
+
+func (w *worker) getBackoffConfig(ctx context.Context) backoff.Backoff {
+	return backoff.Backoff{
+		Factor: 1,
+		Min:    time.Duration(w.config.BackoffMinMS) * time.Millisecond,
+		Max:    time.Duration(w.config.BackoffMaxMS) * time.Millisecond,
+		Jitter: true,
+	}
 }
 
 func (w *worker) processMessage(ctx context.Context, msg *sqs.Message) {
