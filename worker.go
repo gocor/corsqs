@@ -7,7 +7,9 @@ import (
 
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/sqs"
+	"github.com/google/uuid"
 	"github.com/jpillora/backoff"
+	"gitlab.com/gocor/corctx"
 	"gitlab.com/gocor/corlog"
 )
 
@@ -155,12 +157,15 @@ func (w *worker) processMessage(ctx context.Context, msg *sqs.Message) {
 		}
 	}()
 
+	reqID := uuid.New().String()
+	newCtx := corctx.WithRequestID(ctx, reqID)
+
 	// process handler but continue
-	if err := w.handler(ctx, msg); err != nil {
+	if err := w.handler(newCtx, msg); err != nil {
 		return
 	}
 
-	if err := w.receiver.Delete(ctx, *msg.ReceiptHandle); err != nil {
+	if err := w.receiver.Delete(newCtx, *msg.ReceiptHandle); err != nil {
 		l.Errorw("delete error", "err", err.Error(), "receiptHandle", *msg.ReceiptHandle)
 	}
 }
