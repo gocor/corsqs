@@ -7,10 +7,10 @@ import (
 
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/sqs"
+	"github.com/gocor/corctx"
+	"github.com/gocor/corlog"
 	"github.com/google/uuid"
 	"github.com/jpillora/backoff"
-	"gitlab.com/gocor/corctx"
-	"gitlab.com/gocor/corlog"
 )
 
 const defBackoffMinMS = 250

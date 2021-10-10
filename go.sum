@@ -5,6 +5,10 @@ github.com/benbjohnson/clock v1.1.0/go.mod h1:J11/hYXuz8f4ySSvYwY0FKfm+ezbsZBKZx
 github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/davecgh/go-spew v1.1.1 h1:vj9j/u1bqnvCEfJOwUhtlOARqs3+rkHYY13jYWTU97c=
 github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
+github.com/gocor/corctx v1.0.1 h1:4HDuClo9QnY3v5VblIDWAa5R3NKTrAXqc00D9JA31Cs=
+github.com/gocor/corctx v1.0.1/go.mod h1:f9QHXnI9AbrF2KDKy43eXZWhofG9Hai9FKyka2iFRW8=
+github.com/gocor/corlog v1.0.1 h1:uAU67VQyZNfxg30UrZ9TcZ0ObwRwjiXZwhl4UU/2/oU=
+github.com/gocor/corlog v1.0.1/go.mod h1:IEJZX6s5s+8Hm6UnQZkijfai56n9cYrp2jlE2TwIV/A=
 github.com/google/uuid v1.3.0 h1:t6JiXgmwXMjEs8VusXIJk2BXHsn+wx8BZdTaoZ5fu7I=
 github.com/google/uuid v1.3.0/go.mod h1:TIyPZe4MgqvfeYDBFedMoGGpEw/LqOeaOT+nhxU+yHo=
 github.com/jmespath/go-jmespath v0.4.0 h1:BEgLn5cpjn8UN1mAw4NjwDrS35OdebyEtFe+9YPoQUg=
@@ -26,10 +30,6 @@ github.com/stretchr/testify v1.3.0/go.mod h1:M5WIy9Dh21IEIfnGCwXGc5bZfKNJtfHm1UV
 github.com/stretchr/testify v1.4.0/go.mod h1:j7eGeouHqKxXV5pUuKE4zz7dFj8WfuZ+81PSLYec5m4=
 github.com/stretchr/testify v1.7.0 h1:nwc3DEeHmmLAfoZucVR881uASk0Mfjw8xYJ99tb5CcY=
 github.com/stretchr/testify v1.7.0/go.mod h1:6Fq8oRcR53rry900zMqJjRRixrwX3KX962/h/Wwjteg=
-gitlab.com/gocor/corctx v1.0.0 h1:lFBtO1LeSVJgOdznOj1gERx1ncE3cmqb4fbtd2LMLxY=
-gitlab.com/gocor/corctx v1.0.0/go.mod h1:vBxM2CGY2kEDaEuVHuiIX4GPxc7X3/msl4LhBczuROo=
-gitlab.com/gocor/corlog v1.0.0 h1:DeZZ26z5dJYBytHTgLDw65M7g0Z3AEwAbKQVoDlCvWg=
-gitlab.com/gocor/corlog v1.0.0/go.mod h1:mzR73undKjBuhR4VGk/VBxVUW+UYjYXgHhg0Ee7GjlI=
 go.uber.org/atomic v1.7.0 h1:ADUqmZGgLDDfbSL9ZmPxKTybcoEYHgpYfELNoN+7hsw=
 go.uber.org/atomic v1.7.0/go.mod h1:fEN4uk6kAWBTFdckzkM89CLk9XfWZrxpCo0nPH17wJc=
 go.uber.org/goleak v1.1.10 h1:z+mqJhf6ss6BSfSM671tgKyZBFPTTJM+HLxnhPC3wu0=
